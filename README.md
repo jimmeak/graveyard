@@ -131,3 +131,128 @@ If even `mysql_config` is not there, you have to install development headers for
 
 Old setuptools: `pip install setuptools -U`
 
+## Database setup
+
+There are multiple ways how to build forked application. In your local environment you can install your
+own MySQL server, or you can use Docker to build it. You can also create your database on remote-server,
+we will cover those options here.
+
+The key file is your new file `local.py`, that you have created from `local.example.py` which is ignored
+by git. This way you can use this settings only for your local machine and you will not change anything 
+on testing or production server.
+
+Your primary goal is to find `DATABASE_NAME`, `DATABASE_USER`, `DATABASE_PASSWORD`, `DATABASE_HOST`
+and add those in the local config file.
+
+```
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'DATABASE_NAME',
+        'USER': 'DATABASE_USER',
+        'HOST': 'DATABASE_HOST',
+        'PASSWORD': 'DATABASE_PASSWORD',
+        'OPTIONS': {
+            'charset': 'latin2'
+        },
+        'TEST': {
+            'NAME': 'test_dracidoupe_cz',
+            'CHARSET': 'latin2',
+        }
+    }
+}
+```
+### General notes
+- You can not run tests if you are using only one database (eg remote database created via tools
+  like Heroku). To run tests you need to have MySQL server which allows you to creat new databases.
+  
+- Be aware! _Not all database products can be reached._ Typical example is WEDOS DB, that is reachable
+  only an only if you are connecting from within WEDOS apps. You will not be able to make connection
+  between your localhost app and this WEDOS DB. There are almost certainly many other products like 
+  this one.
+  
+- We do not use MySQL newer than 5.5 because of the old web version, currently 
+  running at `http://dracidoupe.cz`. You can use newer version on your local machine, but to be sure
+  everything works fine we recommend to use 5.5.
+
+### Docker Database server
+We will use image for MySQL, so we do not have to setup everything by ourselves. Key part is to properly
+set the `docker-compose.yml`. We need to register service _db_
+``` dockerfile
+services:  
+  db:
+    image: mysql:5.5
+    volumes:
+      - .db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=docker
+      - MYSQL_DATABASE=dracidoupe_cz
+```
+This service _db_ is created with two environment constants. We can see that `.db` is linked 
+to `/var/lib/mysql`, therefore you are free to add some settings for the virtual service db.
+
+If you please to check the database and its tables, you can connect via any tool. The most common
+are PhpMyAdmin and Adminer. You add them to your `docker-compose.yml`
+
+```dockerfile
+services:  
+  db:
+    image: mysql:5.5
+    volumes:
+      - .db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=docker
+      - MYSQL_DATABASE=dracidoupe_cz
+  adminer:
+    image: clue/adminer
+    depends_on:
+      - db
+    ports:
+      - 81:80
+  phpmyadmin:
+    image: phpmyadmin
+    depends_on:
+      - db
+    ports:
+      - 82:80
+```
+This way you can create two new virtual servers that are accessible at `localhost:81` 
+and `localhost:82` respectively. To sign in you use _root_ and its password _docker_ 
+at host _db_ which reflects the name of the service.
+
+
+### Heroku ClearDB
+Some of us have their app deployment on Heroku which also means we need to connect to the database
+there. You can use the remote-database also for your localhost. But be aware of this method.
+__To create Heroku ClearDB, you have to put your credit/debit card info into the Heroku.__ Even if you
+are using their free product. If you have problems with this, probably do not use Heroku as your 
+choise.
+
+- First you have to sign in with your heroku account.
+
+- You create new app by `new -> Create new app` (you can also create pipeline for yourself and then
+  create the app in the pipeline).
+  
+- Open your app and click on `Resources`. In `Add-ons` you can type _ClearDB MySQL_ and it will provide
+  you new MySQL database. You have to chose your _Plan name_. Select the on that is free, since
+  the database with testing data is not huge. This plan _Ignite Free_ will provide you 5MB of space,
+  10 connections and nightly backups. Now (2020-12-19) the database without ddcz data is 1.2MB.
+  
+If you are using Heroku commands, just type `heroku addons:create cleardb:ignite`.
+
+- With created database go to `Settings` and find section names `Config Vars`.
+
+- Click on `Reveal Config vars` and you will get constant `CLEARDB_DATABASE_URL`. This way you will get
+  url in shape `mysql://DATABASE_USER:DATABASE_PASSWORD@DATABASE_HOST/DATABASE_NAME?reconnect=true`. You can
+  put those data into your `local.py` and you can test by running the migrations.
+  
+
+
+
+
+
+
+
+
+
+
