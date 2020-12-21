@@ -26,7 +26,7 @@ In both cases, first clone this repository and run all commands in its directory
 
 Requirements:
 
-* You have [Docker CE installed](https://www.docker.com/community-edition)
+* You have [Docker CE installed](https://docs.docker.com/engine/install/)
 * You have [installed docker-compose](https://docs.docker.com/compose/install/)
 
 * Create your own copy of [local configuration](graveyard/settings/local.example.py)
@@ -144,7 +144,7 @@ on testing or production server.
 Your primary goal is to find `DATABASE_NAME`, `DATABASE_USER`, `DATABASE_PASSWORD`, `DATABASE_HOST`
 and add those in the local config file.
 
-```
+```python
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -238,7 +238,8 @@ choise.
   the database with testing data is not huge. This plan _Ignite Free_ will provide you 5MB of space,
   10 connections and nightly backups. Now (2020-12-19) the database without ddcz data is 1.2MB.
   
-If you are using Heroku commands, just type `heroku addons:create cleardb:ignite`.
+If you are using Heroku commands, just type `heroku addons:create cleardb:ignite` for having the same 
+effect as previous steps provided.
 
 - With created database go to `Settings` and find section names `Config Vars`.
 
@@ -246,7 +247,7 @@ If you are using Heroku commands, just type `heroku addons:create cleardb:ignite
   url in shape `mysql://DATABASE_USER:DATABASE_PASSWORD@DATABASE_HOST/DATABASE_NAME?reconnect=true`. You can
   put those data into your `local.py` and you can test by running the migrations.
   
-
+We do recommend using Heroku ClearDB is you deploy your project onto Heroku servers.
 
 
 
