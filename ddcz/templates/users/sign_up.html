@@ -1,0 +1,112 @@
+{% extends "public.html" %}
+
+{% block content %}
+
+<section id="registration_page">
+    <form action="" id="registration_form">
+        <p class="first_paragraph">
+            <span class="caps">D</span>rak ti proletěl nad hlavu a slunce právě zašlo na mrak, celý svět potemněl. Jak tvá noha šlápne na další větvičku, jelen nějakých patnáct sáhů od tebe zpozorní. Chladný vzduch se prohnal okolo a ty vyrážíš směrem k stezce vedoucí k městu. Kdysi tam prý žili ti největší umělci a řemeslníci, které kdo znal, a jejich krásná díla zdobí město dodnes.
+        </p>
+        <p>
+            Další poryv studeného větru tě trefí do tváře, když vstupuješ na cestu táhnoucí se okolo lesa. Konečně vidíš nebe, tmavě šedé a v dálce za horou Kandris plné blesků. Není už čas nazbyt, bouře se blíží a není ta z těch, kdy by člověk rád poskakoval v dešti a zpíval z plných plic. Tahle bude pořádná. A hele, obchodník peláší na svém voze k městu. Naštěstí vypadá jako dobrák, a tak tě nechá svést se spolu s ním.
+        </p>
+        <p class="merchant">
+            <span class="ds">Ještě, že jsem tě našel!</span> začal obchodník. <span class="ds">Mé jméno je Virga Tenson, obchoduji s látkami. Jak říkají tobě?</span>
+        </p>
+        <p class="character">
+            <span class="ds">Já jsem <input type="text" id="reg_nickname" placeholder="zadej svůj nick"> a bloudím tímhle světem už nějakou chvíli,</span> odpovídáš překvapivě velmi milému Virgovi.
+        </p>
+        <p class="merchant">
+            <span class="ds">Hmm... ta bouřka vypadá nepříjemně, snad budeme včas ve městě a dáme si večeři už někde v teple.</span>
+        </p>
+        <p class="character">
+            <span class="ds">Snad jo...</span>
+        </p>
+        <p>
+            Příjemný rozhovor s obchodníkem přeruší silný úder hromu. Ohlédneš se a vidíš, jak blesk zapálil strom na vršku Grondar. V tenhle zpropadený den už chybí snad jen nějaký útok banditů. Vrátíš se zrakem zpátky před vůz, když začneš vidět obrysy města, které si říká <span class="drd">Dračí doupě</span>.
+        </p>
+        <div class="story_break">* * *</div>
+        <p>
+            Brány města jsou uzavřeny. Město vypadá honosně, jeho hradby pevně. Věž, kterou je vidět zvenčí, by si jistě vyžadovala opravy, zřejmě i další části města budou v horším stavu. Ale bezpečí město nabízí a úkryt před... a je to tady, déšť za zvuku dalšího odporného hromu dopadá na tvůj plášť. Během chvíli máš vodu až na kůži.
+        </p>
+        <p>
+            Brány se otvírají a ty si všimneš, že brána města je dvojitá. Díky bohu za to! Pod víc jak pět metrů širokými hradbami je sucho. Virga neváhá a vjíždí dovnitř. Strážníci jej očividně znají a do města jej pustí.
+        </p>
+        <p class="guard">
+            <span class="ds">Virga může v pořádku jet,</span> pronese strážník. <span class="ds">Ty ale zůstaň, nevypadáš jako nikdo, koho bych znal.</span>
+        </p>
+        <p class="merchant">
+            <span class="ds">Tak se uvidíme později, najdeš mě v putyce.</span>
+        </p>
+        <p class="guard">
+            <span class="ds">Je mi líto, ale do města nemůže vstoupit jen tak někdo. Máme zde stará a velmi drahá díla, které se snaží ukrást plno zloduchů. Je potřeba vést si kompletní seznam návštěvníků a obyvatel města. Takže... ehm... Jméno?</span>
+        </p>
+        <p class="character">
+            <span class="ds">Jmenuji se
+                <input type="text" id="first_name" placeholder="Křestní jméno">
+                <input type="text" id="last_name" placeholder="Příjmení">
+                a jak se jmenuješ ty?
+            </span>
+        </p>
+        <p class="guard">
+            <span class="ds">Já jsem Enda. Takže ty jsi... jasně, 
+                <span id="fname"></span> <span id="lname"></span>, 
+                mám poznamenáno. To zní jako
+                <select name="" id="reg_sex">
+                    <option value="0">ženské</option>
+                    <option value="1">mužské</option>
+                </select>
+                jméno, že?</span>
+        </p>
+        <p class="character">
+            <span class="ds">
+                Očividně... Co bys ještě chtěl vědět Endo? Že je mi
+                <input type="number" name="reg_age" id="age_input" placeholder="Zadej svůj věk"> let?
+            </span>
+        </p>
+        <p class="guard">
+            <span class="ds">Říkáš <span id="age"></span>, jo? Vypadáš mladší. Ale vzhled často klame, zvlášť v téhle době plné starostí. Žádáš tedy o vstup do města a trvalý pobyt?</span>
+        </p>
+        <p class="character">
+            <span class="ds">Přesně tak.</span>
+        </p>
+        <p>
+            Blesk právě uhodil v blízkém okolí. Otočíš se a vidíš, jak za tebou netrpělivě čeká plno dalších, kteří se jdou schovat do města. Ne všem se podařilo schovat před deštěm a zírají na tebe velmi promočeně.
+        </p>
+        <p class="guard">
+            <span class="ds">No tak rychle, nemáme na to celý den. Podívej se, <input type="text" placeholder="Zadej oslovení">, máme tady zrovna místo, přidělíme ti adresu <input type="text" placeholder="Zadej emailovou adresu">, abychom se s tebou mohli spojit v případě nouze, každý dům má svou schránku. Jen pro formalitu mi ještě pověz, jak ses o našem městě dozvěděl<span class="sex_suffix"></span>, jestli v něm někoho znáš a proč bys vlastně rád<span class="sex_suffix"></span> získal<span class="sex_suffix"></span> pobyt.</span>
+        </p>
+        <p class="character">
+            <textarea placeholder="Odkud ses dozvěděla o našem webu?" id="web_from"></textarea>
+            <textarea placeholder="Znáš na webu někoho?"></textarea>
+            <textarea placeholder="Proč bys ráda patřila mezi nás?" id="tell_me_why"></textarea>
+        </p>
+        <p class="guard">
+            <span class="ds">Perfektní! Já to zanesu tady to lejstro na úřad a hned jsem zpátky! Hej! Tak jděte do města, ne? Vždyť nemusíte stát tu frontu, jestli už máte svoje schválení!</span> zakřičí najednou Enda na řadu. <span class="ds">Hrozný lidi... promoknou, i když nemusí. Nicméně já to tam jdu zanést. Všechno, co jsi mi řekl<span class="sex_suffix"></span>, si tam oni nějak uloží do spisů. Aby to bylo fér, musíš s tím prej nejdřív souhlasit. Kdybys chtěl<span class="sex_suffix"></span> <a href="">tady na tomhle svitku</a> je napsaný, co s tím všechno můžou dělat. Tak mi to podškrábni a já běžim.</span>
+        </p>
+        <p class="character">
+            <select name="" class="reg_gdpr">
+                <option value="0"></option>
+                <option value="1">Souhlasím!</option>
+            </select>
+        </p>
+        <div class="after_agreement" style="display: none;">
+            <p class="seal" style="display: block;">
+                <span id="signature"></span>
+                <img src="static/images/registration-seal-gold.svg" alt="">
+            </p>
+            
+            <p>
+                Enda Bhůt se vzdaluje a ty přemýšlíš o tom, jestli bys neměl<span class="sex_suffix"></span> raději město opustit. Přece jen ještě je čas na Endu zavolat a říct mu, že sis to rozmyslel<span class="sex_suffix"></span>. 
+            </p>
+            
+            <div>
+                <input type="submit" value="Nechat Endu Bhůta odnést žádost a stát se oficiálním obyvatelem města Dračí Doupě">
+            </div>
+        </div>
+        
+    </form>
+</section>
+
+
+{% endblock %}
