@@ -54,7 +54,7 @@ from .users import migrate_user, logout_user_without_losing_session
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
-VALID_SKINS = ["light", "dark", "historic"]
+VALID_SKINS = ["light", "dark", "historic", "paper"]
 DEFAULT_LIST_SIZE = 10
 DEFAULT_USER_LIST_SIZE = 50
 

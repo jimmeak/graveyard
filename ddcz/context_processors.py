@@ -6,7 +6,7 @@ from .forms.authentication import LoginForm
 
 def common_variables(request):
     skin = request.session.get("skin", "light")
-    skin_directory = skin if skin not in ["light", "dark"] else "light-dark"
+    skin_directory = skin if skin not in ["light", "dark", "paper"] else "light-dark"
     return {
         "user": request.user,
         "ddcz_profile": request.ddcz_profile,
