@@ -7,6 +7,7 @@ from django.http import (
     HttpResponseRedirect,
     HttpResponseBadRequest,
 )
+from django.utils.http import unquote
 
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse, reverse_lazy, resolve, Resolver404
@@ -116,7 +117,7 @@ def change_skin(request):
 
     try:
         redirect_url = request.GET.get("redirect", "/")
-        resolve(redirect_url)
+        resolve(unquote(redirect_url))
     except Resolver404:
         redirect_url = "/"
 
