@@ -19,6 +19,8 @@ from ...text import create_slug
 from ..magic import MisencodedCharField, MisencodedTextField, MisencodedIntegerField
 from .users import UserProfile
 
+PUBLISHED = "a"
+
 APPROVAL_CHOICES = (
     ("a", "Schváleno"),
     ("n", "Neschváleno"),

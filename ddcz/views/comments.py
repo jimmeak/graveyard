@@ -13,13 +13,16 @@ from ..commonarticles import (
     COMMON_ARTICLES_CREATIVE_PAGES,
 )
 from ..forms.comments import PhorumCommentForm, DeletePhorumCommentForm
-from ..models import Phorum
+from ..models import Phorum, ADD_PHORUM_COMMENT, DELETE_PHORUM_COMMENT
 
 
 @require_http_methods(["GET", "POST"])
 def phorum(request):
     if request.method == "POST" and request.POST["post_type"] and request.user:
-        if request.POST["post_type"] == "d" and request.POST["submit"] == "Smazat":
+        if (
+            request.POST["post_type"] == DELETE_PHORUM_COMMENT
+            and request.POST["submit"] == "Smazat"
+        ):
             try:
                 Phorum.objects.get(
                     id=request.POST["post_id"],
@@ -29,7 +32,10 @@ def phorum(request):
                 messages.error(request, "Zprávu se nepodařilo smazat.")
                 return HttpResponseRedirect(reverse("ddcz:phorum-list"))
 
-        elif request.POST["post_type"] == "a" and request.POST["submit"] == "Přidej":
+        elif (
+            request.POST["post_type"] == ADD_PHORUM_COMMENT
+            and request.POST["submit"] == "Přidej"
+        ):
             form = PhorumCommentForm(request.POST)
             if form.is_valid():
                 Phorum.objects.create(
