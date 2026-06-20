@@ -21,11 +21,11 @@ logger = logging.getLogger(__name__)
 # remains automatized.
 
 CREATION_LIST = ["prispevky", "prispevky_komp"]
-CREATION_DETAIL = "prispevky_precti"
+COMMON_ARTICLE_DETAIL = ["prispevky_precti", "prispevky_diskuze"]
 USER_DETAIL = ["uzivatele_podrobnosti", "runy_ciziod", "runy_cizipro"]
 
 # Forbidden dictionary keys for PAGE_TO_VIEW_MAP:
-#  - Anything from CREATION and CREATION_DETAIL
+#  - Anything from CREATION_LIST and COMMON_ARTICLE_DETAIL
 #  - Anything from ALLOWED_CREATION_PAGES
 PAGE_TO_VIEW_MAP = {
     "aktuality": "ddcz:news",
@@ -35,6 +35,7 @@ PAGE_TO_VIEW_MAP = {
     "seznamka": "ddcz:dating",
     "forum": "ddcz:phorum-list",
     "linky": "ddcz:links-list",
+    "linky_diskuze": "ddcz:links-list",
     "inzerce": "ddcz:market",
     "credits": "ddcz:web-authors-and-editors",
     "faq": "ddcz:website-manual",
@@ -72,7 +73,23 @@ ALLOWED_CREATION_PAGES = [
     "dovednosti",
     "galerie",
     "fotogalerie",
+    "downloady",
 ]
+
+
+CREATION_DETAIL_BY_LEGACY_PAGE = {
+    f"{name}_jeden": name for name in ALLOWED_CREATION_PAGES
+}
+CREATION_DETAIL_BY_LEGACY_PAGE.update(
+    {
+        "dobrodruzstvi_precti": "dobrodruzstvi",
+        "dobrodruzstvi_diskuze": "dobrodruzstvi",
+        "dovednosti_precti": "dovednosti",
+        "galerie_diskuze": "galerie",
+        "fotogalerie_diskuze": "fotogalerie",
+        "downloady_diskuze": "downloady",
+    }
+)
 
 
 @require_http_methods(["HEAD", "GET"])
@@ -111,9 +128,9 @@ def legacy_router(request):
             )
         )
 
-    # For index.php?rub=prispevky_jeden&subsection=page_slug&id=article_id
+    # For index.php?rub=prispevky_precti&co=page_slug&id=article_id
     # we can find the article detail by Id.
-    if page_category == CREATION_DETAIL and id is not False:
+    if page_category in COMMON_ARTICLE_DETAIL and id is not False:
         page = get_object_or_404(CreativePage, slug=page_creation_type)
         return get_creation_detail_redirect(page, id)
 
@@ -133,7 +150,7 @@ def legacy_router(request):
 
     # There are some special creative pages that are not stored
     # as the others, those have their own tables in the database.
-    # For those we have lists and details in this for loop.
+    # For those we have list redirects in this loop and detail aliases below.
     for name in ALLOWED_CREATION_PAGES:
         if page_category in [name, name + "_komp"]:
             return HttpResponseRedirect(
@@ -142,9 +159,11 @@ def legacy_router(request):
                     kwargs={"creative_page_slug": name},
                 )
             )
-        if page_category in [name + "_jeden"]:
-            page = get_object_or_404(CreativePage, slug=name)
-            return get_creation_detail_redirect(page, id)
+    if page_category in CREATION_DETAIL_BY_LEGACY_PAGE:
+        page = get_object_or_404(
+            CreativePage, slug=CREATION_DETAIL_BY_LEGACY_PAGE[page_category]
+        )
+        return get_creation_detail_redirect(page, id)
 
     # Putyka table redirects (we have a referral from DrD2 official site, actually)
     if page_category == "putyka_jeden":
@@ -153,12 +172,6 @@ def legacy_router(request):
                 "ddcz:tavern-posts",
                 kwargs={"tavern_table_id": id},
             )
-        )
-
-    # Galerie is also somewhat often referenced
-    if page_category == "galerie_diskuze":
-        return get_creation_detail_redirect(
-            CreativePage.objects.get(slug="galerie"), id
         )
 
     ###  Finally if no route is found, redirect to news and log

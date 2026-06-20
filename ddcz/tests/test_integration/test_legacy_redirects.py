@@ -3,6 +3,8 @@ from django.test import Client, TestCase
 from ddcz.models import (
     ApprovalChoices,
     CommonArticle,
+    DownloadItem,
+    Photo,
     RangerSpell,
     Skill,
     UserProfile,
@@ -81,6 +83,87 @@ class TestUserProfileRedirect(TestCase):
         )
         self.assertEquals(response.status_code, 301)
         self.assertEquals(response.url, f"/uzivatel/{self.user.id}-test/")
+
+
+class TestLegacyIndexRouter(TestCase):
+    fixtures = ["pages"]
+
+    def setUp(self):
+        super().setUp()
+        self.client = Client()
+
+    def test_downloads_list_redirect(self):
+        response = self.client.get("/index.php?rub=downloady")
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response.url, "/rubriky/downloady/")
+
+    def test_links_discussion_redirect(self):
+        response = self.client.get("/index.php?rub=linky_diskuze")
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response.url, "/linky/")
+
+    def test_creative_page_read_alias_redirect(self):
+        skill = Skill.objects.create(id=42, name="Test skill", description="yolo")
+
+        response = self.client.get(f"/index.php?rub=dovednosti_precti&id={skill.id}")
+
+        self.assertEquals(response.status_code, 301)
+        self.assertEquals(
+            response.url,
+            f"/rubriky/dovednosti/{skill.id}-{skill.get_slug()}/",
+        )
+
+    def test_common_article_discussion_redirect(self):
+        article = CommonArticle.objects.create(
+            id=128,
+            name="Test article",
+            creative_page_slug="clanky",
+            is_published=CommonArticle.CREATION_APPROVED,
+        )
+
+        response = self.client.get(
+            f"/index.php?rub=prispevky_diskuze&co=clanky&id={article.id}"
+        )
+
+        self.assertEquals(response.status_code, 301)
+        self.assertEquals(
+            response.url,
+            f"/rubriky/clanky/{article.id}-{article.get_slug()}/",
+        )
+
+    def test_download_discussion_alias_redirect(self):
+        download = DownloadItem.objects.create(
+            id=8,
+            name="Test download",
+            format="pdf",
+            description="yolo",
+            size=123,
+            group="test",
+        )
+
+        response = self.client.get(f"/index.php?rub=downloady_diskuze&id={download.id}")
+
+        self.assertEquals(response.status_code, 301)
+        self.assertEquals(
+            response.url,
+            f"/rubriky/downloady/{download.id}-{download.get_slug()}/",
+        )
+
+    def test_gallery_discussion_alias_redirect(self):
+        photo = Photo.objects.create(
+            id=13,
+            name="Test photo",
+            image_path="photo.jpg",
+            image_thumbnail_path="thumb.jpg",
+        )
+
+        response = self.client.get(f"/index.php?rub=fotogalerie_diskuze&id={photo.id}")
+
+        self.assertEquals(response.status_code, 301)
+        self.assertEquals(
+            response.url,
+            f"/rubriky/fotogalerie/{photo.id}-{photo.get_slug()}/",
+        )
 
 
 class TestCommonArticlePrintRedirect(TestCase):
