@@ -1,2 +1,2 @@
 web: gunicorn graveyard.wsgi
-release: python3 manage.py migrate && python3 manage.py clearcache
+release: python3 manage.py migrate && python3 manage.py clearcache && python3 manage.py warmsitemap

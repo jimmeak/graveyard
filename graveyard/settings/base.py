@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sitemaps",
 ]
 
 MIDDLEWARE = [
@@ -227,6 +228,13 @@ RSS_LATEST_ITEMS_COUNT = 30
 RSS_COMMENT_ITEMS_COUNT = 10
 # 6 hours; if we start having multiple items happening a day, implement push case
 RSS_CACHE_INTERVAL = 60 * 60 * 6
+
+# Sitemap configuration. Sitemap XML is precomputed by `manage.py warmsitemap`
+# (run on every deploy, see Procfile, plus periodically on a schedule) and
+# served straight from cache -- it is never computed within a web request.
+# The interval below is deliberately much longer than the warm-up schedule,
+# so the cached value never lapses between warm-up runs.
+SITEMAP_CACHE_INTERVAL = 60 * 60 * 24 * 7  # 7 days
 
 LOGGING = {
     "version": 1,

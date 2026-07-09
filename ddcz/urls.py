@@ -6,6 +6,7 @@ from django.views.decorators.cache import cache_page
 from .feeds import PhorumFeed, CompleteNewsFeed
 from . import views
 from .views import news, tavern, misc, email
+from .views import sitemap as sitemap_views
 from .views.legacy import legacy_router, print_legacy_router
 
 app_name = "ddcz"
@@ -58,6 +59,11 @@ urlpatterns = [
             template_name="traffic-advice.json",
             content_type="application/trafficadvice+json",
         ),
+    ),
+    # Precomputed and cached; see ddcz/sitemaps.py and the `warmsitemap` command
+    path("sitemap.xml", sitemap_views.sitemap_index, name="sitemap-index"),
+    path(
+        "sitemap-<section>.xml", sitemap_views.sitemap_section, name="sitemap-section"
     ),
     ### Creations and Creative Pages
     path(
