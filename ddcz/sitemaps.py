@@ -1,12 +1,5 @@
 """
-Sitemap definitions for the sitemap.xml framework.
-
-Important: these Sitemap classes are never invoked during a normal web
-request. They are rendered offline by `manage.py warmsitemap` (see
-`ddcz/management/commands/warmsitemap.py`) and the resulting XML is cached;
-the public `ddcz/views/sitemap.py` views only ever read that cache. This
-keeps the (potentially expensive) enumeration of all approved creations
-off the request path entirely.
+Sitemap definitions for the sitemap.xml framework. Only served from cache and never on demand
 """
 
 from django.contrib.sitemaps import Sitemap
@@ -16,8 +9,7 @@ from .creations import ApprovalChoices
 from .models import CreativePage
 
 # Priority bands: every creation must outrank every non-creation page, and
-# creations are further weighted by their star rating (0-6, see
-# ddcz/creations.py RATING_DESCRIPTIONS; 6 is reserved for contest winners).
+# creations are further weighted by their star rating
 STATIC_PAGE_PRIORITY = 0.3
 LISTING_PAGE_PRIORITY = 0.4
 CREATION_BASE_PRIORITY = 0.5
@@ -86,9 +78,6 @@ class CreativePageListSitemap(Sitemap):
 class CreationSitemap(Sitemap):
     """
     Every approved creation across all CreativePages.
-
-    Mirrors the enumeration in `ddcz/feeds.py` (CompleteNewsFeed.items), but
-    without the RSS_LATEST_ITEMS_COUNT cap, since a sitemap wants everything.
     """
 
     changefreq = (

@@ -14,10 +14,7 @@ from ...sitemaps import SITEMAPS, sitemap_index_cache_key, sitemap_section_cache
 
 class Command(BaseCommand):
     help = (
-        "Precompute sitemap.xml (index + all sections/pages) and store it in the "
-        "cache. The public sitemap views only ever read from cache, so this command "
-        "must run for a sitemap to be servable -- on every deploy (see Procfile "
-        "release phase) and periodically on a schedule."
+        "Precompute sitemap.xml (index + all sections/pages) and store it in the cache "
     )
 
     def handle(self, *args, **options):
@@ -29,12 +26,7 @@ class Command(BaseCommand):
             request = factory.get(
                 path, query or {}, secure=secure, HTTP_HOST=base_uri.netloc
             )
-            # This request never goes through the middleware stack, but the
-            # site-wide `common_variables` context processor (used by every
-            # template, including the sitemap ones) expects session/user/
-            # profile to be present -- mirror what SessionMiddleware,
-            # AuthenticationMiddleware and `attach_profile` set for an
-            # anonymous visitor.
+            # Include common variables
             request.session = SessionStore()
             request.user = AnonymousUser()
             request.ddcz_profile = None
