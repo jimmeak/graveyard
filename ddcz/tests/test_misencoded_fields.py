@@ -1,5 +1,6 @@
 from django.test import SimpleTestCase
 from ddcz.models.magic import MisencodedCharField
+from ddcz.text import misencode
 
 
 class MisencodedFieldsTest(SimpleTestCase):
@@ -28,3 +29,20 @@ class MisencodedFieldsTest(SimpleTestCase):
         processed = self.field.get_db_prep_value(value, None)
         decoded = processed.encode("latin2").decode("cp1250")
         self.assertEqual(decoded, stripped_value)
+
+    def test_handles_c1_control_char_gracefully(self):
+        """Test for control char causing DDCZ-2T"""
+        value = "Keyd\x9ea"
+        processed = self.field.get_db_prep_value(value, None)
+        self.assertIsInstance(processed, str)
+        self.assertEqual(processed.encode("latin2").decode("cp1250"), "Keyda")
+
+
+class MisencodeFunctionTest(SimpleTestCase):
+    def test_normal_czech_text_round_trips(self):
+        value = "Příliš žluťoučký kůň úpěl ďábelské ódy"
+        self.assertEqual(misencode(value).encode("latin2").decode("cp1250"), value)
+
+    def test_c1_control_char_does_not_raise(self):
+        self.assertEqual(misencode("Keyd\x9ea"), "Keyda")
+        self.assertEqual(misencode("Mu\x9e"), "Mu")

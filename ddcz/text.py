@@ -1,9 +1,10 @@
+import logging
 import re
 from unicodedata import normalize, combining
 
 from django.utils.html import escape
 
-from sentry_sdk import capture_exception
+logger = logging.getLogger(__name__)
 
 
 def create_slug(text):
@@ -25,7 +26,9 @@ def misencode(text):
     try:
         return text.encode("cp1250").decode("latin2")
     except (UnicodeEncodeError, UnicodeDecodeError) as err:
-        capture_exception(err)
+        # Expected for legacy data that isn't representable in cp1250 (C1 control
+        # chars, emoji, symbols). Log quietly and strip rather than alerting Sentry.
+        logger.warning(f"Could not misencode {text!r} to cp1250, stripping: {err}")
         return text.encode("cp1250", "ignore").decode("latin2", "ignore")
 
 

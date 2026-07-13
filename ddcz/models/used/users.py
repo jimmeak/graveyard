@@ -275,9 +275,9 @@ class MentatNewbie(models.Model):
 
 class Rune(models.Model):
     donor_id = models.IntegerField(db_column="id_darce")
-    donor_nick = models.CharField(max_length=30, db_column="nick_darce")
+    donor_nick = MisencodedCharField(max_length=30, db_column="nick_darce")
     receiver_id = models.IntegerField(blank=True, null=True, db_column="id_prijemce")
-    receiver_nick = models.CharField(max_length=30, db_column="nick_prijemce")
+    receiver_nick = MisencodedCharField(max_length=30, db_column="nick_prijemce")
     type = models.CharField(max_length=15, db_column="typ")
     graphics = models.SmallIntegerField(db_column="grafika")
     text = MisencodedTextField(db_column="venovani")
