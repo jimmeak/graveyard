@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="cs">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Seznamka — návrh v2</title>
+    <style>
+        :root {
+            --page-bg: #c0c0c0;
+            --page-text: #000;
+            --heading: #fff;
+            --heading-bg: #2f4f4f;
+            --subheading-bg: #aaa;
+            --panel-bg: #cecece;
+            --input-bg: #d2d2d2;
+            --link: #2f4f4f;
+            --link-hover: #0d2d2d;
+            --border: #000;
+            --soft-border: #8b8b8b;
+            --rule: #ab8a3f;
+            --fresh: #365f42;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 8px;
+            color: var(--page-text);
+            background: var(--page-bg);
+            font-family: Verdana, Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.35;
+        }
+
+        button,
+        select,
+        input,
+        textarea { font: inherit; }
+
+        a,
+        a:visited { color: var(--link); text-decoration: none; }
+        a:hover,
+        a:focus-visible { color: var(--link-hover); text-decoration: underline; }
+
+        #container {
+            display: grid;
+            grid-template-areas:
+                "header header header"
+                "left main right"
+                "footer footer footer";
+            grid-template-columns: 175px minmax(0, 1fr) 175px;
+            gap: 10px 50px;
+            width: 95%;
+            margin: 0 auto;
+        }
+
+        #page-header { grid-area: header; text-align: center; }
+        #left-menu { grid-area: left; }
+        #page-content { grid-area: main; min-width: 0; }
+        #right-menu { grid-area: right; }
+        #page-footer { grid-area: footer; width: 60%; margin: 1rem auto; font-size: .8rem; text-align: center; }
+
+        #page-header img { display: block; width: min(600px, 100%); height: auto; margin: 10px auto 18px; }
+
+        nav ul { margin: 1em 0; padding: 0; list-style: none; }
+        nav ul ul { margin: 0; }
+        nav a { display: block; font-weight: bold; }
+        .nav-border { margin-bottom: 1em; border: 1px solid var(--border); }
+        .list-heading,
+        .list-subheading { display: block; padding: 4px 0; text-align: center; font-weight: bold; }
+        .list-heading { color: var(--heading); background: var(--heading-bg); }
+        .list-subheading { background: var(--subheading-bg); }
+        .list-subheading::before { content: "- "; }
+        .list-subheading::after { content: " -"; }
+        .list-box { padding: 5px; }
+
+        .retro-banner {
+            margin: 1em 0 1.2em;
+            border: 2px outset #dedede;
+            outline: 1px solid #253e39;
+            color: white;
+            background:
+                repeating-linear-gradient(135deg, rgba(255,255,255,.025) 0 2px, transparent 2px 7px),
+                #2f4f4f;
+            box-shadow: inset 0 0 0 1px #6f8883, 3px 3px 0 rgba(0,0,0,.18);
+        }
+
+        .banner-topline {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 3px 8px;
+            border-bottom: 1px solid #132c28;
+            color: #d8dfdd;
+            background: #203c37;
+            font-size: .68rem;
+            font-weight: bold;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .banner-topline .online { color: #d6c37b; letter-spacing: 0; text-transform: none; }
+
+        .banner-body {
+            display: grid;
+            grid-template-columns: 74px minmax(0, 1fr) auto;
+            gap: 14px;
+            align-items: center;
+            min-height: 132px;
+            padding: 13px 16px;
+        }
+
+        .banner-dragon {
+            width: 64px;
+            height: 64px;
+            padding: 7px;
+            border: 2px ridge #d3d3d3;
+            background: #bfbfbf;
+            image-rendering: auto;
+        }
+
+        .banner-copy h1 {
+            margin: 0 0 4px;
+            color: #fff;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(1.55rem, 3vw, 2.15rem);
+            line-height: 1.1;
+            text-align: left;
+            text-shadow: 1px 1px 0 #000;
+        }
+
+        .banner-copy p { margin: 0; color: #eef1ef; font-size: .9rem; }
+        .banner-copy .activity { display: block; margin-top: 8px; color: #d6c37b; font-size: .7rem; }
+
+        .banner-action {
+            padding: 9px 12px;
+            border: 2px outset #e4e4e4;
+            color: #173b35;
+            background: #c6c6c6;
+            font-size: .85rem;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .banner-action:hover { border-style: inset; color: #0d2d2d; background: #d2d2d2; text-decoration: none; }
+
+        .button {
+            display: inline-block;
+            min-height: 36px;
+            padding: 7px 12px;
+            border: 1px solid var(--border);
+            border-radius: 0;
+            color: white;
+            background: var(--heading-bg);
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .button:hover { color: white; background: var(--link-hover); text-decoration: none; }
+        .button--plain { color: var(--link); background: var(--page-bg); }
+        .button--plain:hover { color: var(--link-hover); background: #b5b5b5; }
+
+        .filters {
+            margin: 1.2rem 0 1.5rem;
+            border: 1px solid var(--border);
+            background: var(--panel-bg);
+        }
+
+        .filters h2 { margin: 0; padding: 4px 8px; color: white; background: var(--heading-bg); font-size: 1rem; }
+        .filter-body { display: grid; grid-template-columns: 1.2fr 1fr 1fr auto; gap: 10px; align-items: end; padding: 12px; }
+        .field label { display: block; margin-bottom: 3px; font-size: .76rem; font-weight: bold; }
+        .field select { width: 100%; min-height: 36px; padding: 5px; border: 1px solid #666; background: var(--input-bg); }
+        .quick-filters { display: flex; flex-wrap: wrap; gap: 14px; padding: 0 12px 11px; font-size: .8rem; }
+        .quick-filters label { cursor: pointer; }
+
+        .result-bar { display: flex; align-items: baseline; justify-content: space-between; gap: 15px; margin-bottom: .7rem; }
+        .result-bar h2 { margin: 0; color: #202b28; font-size: 1.15rem; }
+        .result-bar p { margin: 0; font-size: .8rem; }
+        .clear { padding: 0; border: 0; color: var(--link); background: none; text-decoration: underline; cursor: pointer; }
+
+        .listing-list { display: grid; gap: 1rem; }
+        .listing[hidden] { display: none; }
+
+        .listing {
+            border: 1px solid var(--soft-border);
+            border-left: 4px solid var(--heading-bg);
+            background: rgba(255, 255, 255, .12);
+        }
+
+        .listing-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 6px 10px;
+            background: #adadad;
+        }
+
+        .listing-header h3 { margin: 0; font-size: 1rem; text-align: left; }
+        .fresh { color: var(--fresh); font-size: .72rem; font-weight: bold; white-space: nowrap; }
+        .fresh::before { content: "● "; }
+
+        .listing-body { display: block; }
+        .listing-details { display: table; width: 100%; padding: 7px 12px 11px; border-spacing: 0 .38rem; }
+        .row { display: table-row; }
+        .label,
+        .value { display: table-cell; vertical-align: top; }
+        .label { width: 125px; padding-right: 12px; font-weight: bold; }
+        .description { line-height: 1.45; }
+        .tag { display: inline-block; margin: 0 5px 4px 0; padding: 2px 5px; border: 1px solid #888; background: #cacaca; font-size: .72rem; }
+        .key-fact { border-color: #46645d; color: #173b35; background: #b8c5c1; font-weight: bold; }
+
+        .more-info summary {
+            display: inline-block;
+            color: var(--link);
+            font-size: .78rem;
+            font-weight: bold;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .more-info summary::marker { content: ""; }
+        .more-info summary::before { content: "[ "; }
+        .more-info summary::after { content: " ]"; }
+        .more-info[open] summary { margin-bottom: 7px; }
+        .extra-info { margin: 0; padding-left: 1.15rem; font-size: .75rem; line-height: 1.5; }
+        .extra-actions { margin-top: 6px; font-size: .72rem; }
+        .extra-actions a { display: inline; margin-right: 10px; }
+
+        .listing-action {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 7px 10px;
+            border-top: 1px solid var(--soft-border);
+            background: rgba(255,255,255,.14);
+            text-align: left;
+        }
+
+        .listing-action strong { order: 1; margin-right: auto; font-size: .8rem; }
+        .listing-action strong::before { content: "Autor: "; font-weight: normal; }
+        .listing-action small { order: 2; max-width: 310px; color: #444; font-size: .67rem; line-height: 1.3; }
+        .listing-action .button { order: 3; min-height: 31px; padding: 5px 10px; font-size: .78rem; white-space: nowrap; }
+
+        .pagination { display: flex; justify-content: space-between; margin: 1.25rem 0; }
+        .pagination a::before { content: "["; }
+        .pagination a::after { content: "]"; }
+
+        .empty { display: none; padding: 2rem; border: 1px dashed #666; text-align: center; }
+        .empty h3 { margin-top: 0; }
+
+        .safety {
+            margin-top: 1.5rem;
+            padding: 10px 12px;
+            border: 1px solid #6d6d6d;
+            background: #b6b6b6;
+            font-size: .8rem;
+        }
+
+        .safety strong { color: #1f3732; }
+
+        dialog { width: min(520px, calc(100% - 24px)); padding: 0; border: 1px solid #111; background: var(--page-bg); }
+        dialog::backdrop { background: rgba(0,0,0,.62); }
+        .dialog-title { margin: 0; padding: 5px 10px; color: white; background: var(--heading-bg); font-size: 1rem; }
+        .dialog-body { padding: 12px; }
+        .dialog-body label { display: block; margin: 10px 0 3px; font-weight: bold; }
+        .dialog-body input,
+        .dialog-body textarea { width: 100%; padding: 6px; border: 1px solid #555; background: var(--input-bg); }
+        .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+
+        @media (max-width: 1000px) {
+            #container { grid-template-columns: 150px minmax(0, 1fr); grid-template-areas: "header header" "left main" "right main" "footer footer"; gap: 10px 25px; }
+            .filter-body { grid-template-columns: 1fr 1fr; }
+            .filter-body .button { grid-column: 1 / -1; }
+        }
+
+        @media (max-width: 720px) {
+            body { margin: 0; }
+            #container { display: block; width: 100%; }
+            #page-header { padding: 8px 12px; }
+            #left-menu,
+            #right-menu { display: none; }
+            #page-content { padding: 0 10px; }
+            .retro-banner { margin-top: .25rem; }
+            .banner-topline { align-items: flex-start; flex-direction: column; gap: 2px; }
+            .banner-body { grid-template-columns: 52px 1fr; gap: 10px; padding: 12px; }
+            .banner-dragon { width: 48px; height: 48px; padding: 5px; }
+            .banner-action { grid-column: 1 / -1; white-space: normal; }
+            .filter-body { grid-template-columns: 1fr; }
+            .filter-body .button { grid-column: auto; }
+            .result-bar { align-items: flex-start; flex-direction: column; }
+            .listing-header { align-items: flex-start; flex-direction: column; }
+            .listing-details { display: block; }
+            .row,
+            .label,
+            .value { display: block; }
+            .row { margin-bottom: .55rem; }
+            .label { width: auto; margin-bottom: 2px; }
+            .listing-action { align-items: stretch; flex-direction: column; }
+            .listing-action strong { margin-right: 0; }
+            .listing-action small { max-width: none; }
+            #page-footer { width: auto; padding: 0 12px; }
+        }
+    </style>
+</head>
+<body>
+<div id="container">
+    <header id="page-header"><a href="#" aria-label="DraciDoupe.cz — domů"><img src="../static/skins/light/img/logo.svg" alt="DraciDoupe.cz"></a></header>
+
+    <nav id="left-menu" aria-label="Hlavní navigace">
+        <section class="nav-border"><span class="list-heading">Rubriky</span><span class="list-subheading">Tvorba</span><ul class="list-box"><li><a href="#">Články&amp;Eseje</a></li><li><a href="#">Galerie</a></li><li><a href="#">Fotogalerie</a></li><li><a href="#">Hřbitov</a></li></ul><span class="list-subheading">Doplňky</span><ul class="list-box"><li><a href="#">Dovednosti</a></li><li><a href="#">Nová Povolání</a></li><li><a href="#">Nové Rasy</a></li></ul><span class="list-subheading">Pro PJ</span><ul class="list-box"><li><a href="#">Bestiář</a></li><li><a href="#">Dobrodružství</a></li><li><a href="#">Předměty</a></li></ul></section>
+        <section class="nav-border"><span class="list-heading">Ostatní</span><span class="list-subheading">Kontakt</span><ul class="list-box"><li><a href="#">Seznamka</a></li><li><a href="#">Inzerce</a></li></ul><span class="list-subheading">Nápověda</span><ul class="list-box"><li><a href="#">Co je to Dračí Doupě?</a></li><li><a href="#">Dračí manuál</a></li><li><a href="#">Otázky a Odpovědi</a></li></ul></section>
+    </nav>
+
+    <main id="page-content">
+        <section class="retro-banner">
+            <div class="banner-topline"><span>DraciDoupe.cz &gt; Seznamka</span><span class="online">● 12 aktivních nabídek</span></div>
+            <div class="banner-body">
+                <img class="banner-dragon" src="../static/skins/light/img/drak.svg" alt="">
+                <div class="banner-copy"><h1>Najdi své další dobrodružství</h1><p>Hráči, družiny a páni jeskyně pro hraní u jednoho stolu i online.</p><span class="activity">3 nové nabídky tento týden · poslední aktivita dnes</span></div>
+                <a class="banner-action" href="#nova-nabidka">[ Přidat nabídku ]</a>
+            </div>
+        </section>
+
+        <form class="filters" id="filters">
+            <h2>Filtrovat nabídky</h2>
+            <div class="filter-body">
+                <div class="field"><label for="looking">Hledám</label><select id="looking"><option value="all">Všechny nabídky</option><option value="players">Hráče</option><option value="group">Družinu</option><option value="gm">Pána jeskyně</option></select></div>
+                <div class="field"><label for="mode">Hraní</label><select id="mode"><option value="all">Online i osobně</option><option value="online">Online</option><option value="in-person">Osobně</option></select></div>
+                <div class="field"><label for="region">Kraj</label><select id="region"><option value="all">Všechny kraje</option><option value="praha">Praha</option><option value="jihomoravsky">Jihomoravský</option><option value="online">Online</option></select></div>
+                <button class="button" type="submit">Vyhledat</button>
+            </div>
+            <div class="quick-filters"><label><input id="beginners" type="checkbox"> Vhodné pro začátečníky</label><label><input id="fresh" type="checkbox" checked> Pouze aktuální nabídky</label><label><input id="drd" type="checkbox"> Pouze Dračí doupě</label></div>
+        </form>
+
+        <div class="result-bar"><h2>Aktivní nabídky</h2><p><span id="result-count">3</span> výsledky · <button class="clear" id="clear-filters" type="button">zrušit filtry</button></p></div>
+
+        <section class="listing-list" aria-label="Nabídky v seznamce">
+            <article class="listing" data-role="players" data-mode="in-person" data-region="praha" data-beginners="false" data-drd="true">
+                <header class="listing-header"><h3>Pražská družina hledá dva hráče</h3><span class="fresh">Aktualizováno před 2 dny</span></header>
+                <div class="listing-body"><div class="listing-details"><div class="row"><span class="label">Rychlý přehled:</span><span class="value"><span class="tag key-fact">2 volná místa</span><span class="tag key-fact">dlouhodobá kampaň</span><span class="tag key-fact">1× za 14 dní</span></span></div><div class="row"><span class="label">Sekce:</span><span class="value"><a href="#">Hledáme hráče</a></span></div><div class="row"><span class="label">Kde a jak:</span><span class="value">Praha 6, osobně</span></div><div class="row"><span class="label">Herní systém:</span><span class="value">Dračí doupě 1.6</span></div><div class="row"><span class="label">Kdy:</span><span class="value">Čtvrtek večer</span></div><div class="row"><span class="label">O nabídce:</span><span class="value description">Rozjíždíme nové tažení. Hledáme spolehlivé hráče, kteří si užijí příběh, průzkum i trochu taktiky.</span></div><div class="row"><span class="label">Podrobnosti:</span><span class="value"><details class="more-info"><summary>více informací</summary><ul class="extra-info"><li>Styl hry: příběh, průzkum a vyvážený boj</li><li>Zkušenost: mírně pokročilí i zkušení</li><li>Věk hráčů: 18+</li><li>Nabídka platí ještě 24 dní</li></ul><div class="extra-actions"><a href="#">[ sdílet nabídku ]</a><a href="#">[ nahlásit neaktuální ]</a></div></details></span></div></div><aside class="listing-action"><strong>Aragorn</strong><button class="button contact" type="button" data-person="Aragorn" data-listing="Pražská družina hledá dva hráče">Mám zájem</button><small>První zprávu doručí DraciDoupe.cz. E-mail zůstane skrytý.</small></aside></div>
+            </article>
+
+            <article class="listing" data-role="group" data-mode="online" data-region="online" data-beginners="true" data-drd="true">
+                <header class="listing-header"><h3>Začátečnice hledá online družinu</h3><span class="fresh">Přidáno před 5 dny</span></header>
+                <div class="listing-body"><div class="listing-details"><div class="row"><span class="label">Rychlý přehled:</span><span class="value"><span class="tag key-fact">1 hráčka</span><span class="tag key-fact">dlouhodobá hra</span><span class="tag key-fact">večery</span></span></div><div class="row"><span class="label">Sekce:</span><span class="value"><a href="#">Hledám družinu</a></span></div><div class="row"><span class="label">Kde a jak:</span><span class="value">Online</span></div><div class="row"><span class="label">Herní systém:</span><span class="value">DrD nebo DrD II</span></div><div class="row"><span class="label">Kdy:</span><span class="value">Večer podle dohody</span></div><div class="row"><span class="label">O nabídce:</span><span class="value description">Po letech bych se ráda vrátila ke hraní. Hledám trpělivou skupinu, která pomůže připomenout pravidla.</span></div><div class="row"><span class="label">Podrobnosti:</span><span class="value"><details class="more-info"><summary>více informací</summary><ul class="extra-info"><li>Styl hry: hlavně příběh a objevování</li><li>Zkušenost: návrat po delší pauze</li><li>Kamera při online hře není nutná</li><li>Nabídka platí ještě 51 dní</li></ul><div class="extra-actions"><a href="#">[ sdílet nabídku ]</a><a href="#">[ nahlásit neaktuální ]</a></div></details></span></div></div><aside class="listing-action"><strong>Lenka</strong><button class="button contact" type="button" data-person="Lenka" data-listing="Začátečnice hledá online družinu">Pozvat do družiny</button><small>Kontakty se zobrazí jen tehdy, když je oba budete chtít sdílet.</small></aside></div>
+            </article>
+
+            <article class="listing" data-role="gm" data-mode="in-person" data-region="jihomoravsky" data-beginners="true" data-drd="false">
+                <header class="listing-header"><h3>PJ pro nové dobrodružství v Brně</h3><span class="fresh">Obnoveno dnes</span></header>
+                <div class="listing-body"><div class="listing-details"><div class="row"><span class="label">Rychlý přehled:</span><span class="value"><span class="tag key-fact">3–5 hráčů</span><span class="tag key-fact">krátké dobrodružství</span><span class="tag key-fact">termín dohodou</span></span></div><div class="row"><span class="label">Sekce:</span><span class="value"><a href="#">Nabízím se jako PJ</a></span></div><div class="row"><span class="label">Kde a jak:</span><span class="value">Brno, osobně</span></div><div class="row"><span class="label">Herní systém:</span><span class="value">Dračí hlídka</span></div><div class="row"><span class="label">Kdy:</span><span class="value">Po dohodě</span></div><div class="row"><span class="label">O nabídce:</span><span class="value description">Nabízím vedení kratšího fantasy dobrodružství pro úplně novou družinu. Pravidla vysvětlím při hře.</span></div><div class="row"><span class="label">Podrobnosti:</span><span class="value"><details class="more-info"><summary>více informací</summary><ul class="extra-info"><li>Styl hry: lehčí příběh, průzkum a humor</li><li>Zkušenost: úplní začátečníci vítáni</li><li>Bezbariérové místo lze domluvit</li><li>Nabídka platí ještě 58 dní</li></ul><div class="extra-actions"><a href="#">[ sdílet nabídku ]</a><a href="#">[ nahlásit neaktuální ]</a></div></details></span></div></div><aside class="listing-action"><strong>Starý PJ</strong><button class="button contact" type="button" data-person="Starý PJ" data-listing="PJ pro nové dobrodružství v Brně">Mám zájem</button><small>Nabídka automaticky vyprší za 58 dní, pokud ji autor neobnoví.</small></aside></div>
+            </article>
+        </section>
+
+        <div class="empty" id="empty"><h3>Žádná nabídka neodpovídá filtrům</h3><p>Zkus upravit hledání, nebo přidej vlastní nabídku.</p><button class="button button--plain" id="reset-empty" type="button">Zobrazit všechny</button></div>
+        <nav class="pagination" aria-label="Stránkování"><a href="#">Novější</a><a href="#">Starší</a></nav>
+        <aside class="safety" id="nova-nabidka"><strong>Bezpečný kontakt:</strong> telefon ani e-mail už nejsou veřejnou součástí nabídky. První zprávu předá web a další kontakt si uživatelé vymění sami. Nabídky po 60 dnech expirují. <a href="#">Přidat vlastní nabídku</a>.</aside>
+    </main>
+
+    <nav id="right-menu" aria-label="Vedlejší navigace">
+        <section class="nav-border"><span class="list-heading">Novinky</span><ul class="list-box"><li><a href="#">Aktuality</a></li><li><a href="#">Novinky</a></li></ul></section>
+        <section class="nav-border"><span class="list-heading">Komunikace</span><ul class="list-box"><li><a href="#">Chat (Discord)</a></li><li><a href="#">Fórum</a></li></ul></section>
+        <section class="nav-border"><span class="list-heading">Control</span><ul class="list-box"><li><a href="#">Registrace</a></li><li><a href="#">Přihlášení</a></li><li><a href="#">Zapomenuté heslo</a></li></ul></section>
+    </nav>
+
+    <footer id="page-footer"><p><a href="#">DraciDoupe.cz</a> © 2018–2026 Almad a ostatní přispěvatelé. DrD, Dračí doupě a Altar jsou ochranné známky společnosti ALTAR.</p><p>Tato verze stránek je open source a je možné přispět k jejímu vývoji.</p></footer>
+</div>
+
+<dialog id="contact-dialog"><h2 class="dialog-title">Napsat uživateli <span id="recipient"></span></h2><form class="dialog-body" method="dialog"><p>Odpovídáš na nabídku „<strong id="listing-name"></strong>“. Kontaktní údaje se automaticky nezveřejní.</p><label for="reply-email">Tvůj e-mail</label><input id="reply-email" type="email" required><label for="reply-message">Zpráva</label><textarea id="reply-message" rows="5" required></textarea><div class="dialog-actions"><button class="button button--plain" value="cancel">Zrušit</button><button class="button" value="send">Poslat zprávu</button></div></form></dialog>
+
+<script>
+    const filterForm = document.querySelector('#filters');
+    const listings = [...document.querySelectorAll('.listing')];
+    const resultCount = document.querySelector('#result-count');
+    const empty = document.querySelector('#empty');
+
+    function filterListings() {
+        const role = document.querySelector('#looking').value;
+        const mode = document.querySelector('#mode').value;
+        const region = document.querySelector('#region').value;
+        const beginners = document.querySelector('#beginners').checked;
+        const drd = document.querySelector('#drd').checked;
+        let visible = 0;
+
+        listings.forEach(listing => {
+            const show = (role === 'all' || listing.dataset.role === role)
+                && (mode === 'all' || listing.dataset.mode === mode)
+                && (region === 'all' || listing.dataset.region === region)
+                && (!beginners || listing.dataset.beginners === 'true')
+                && (!drd || listing.dataset.drd === 'true');
+            listing.hidden = !show;
+            if (show) visible += 1;
+        });
+
+        resultCount.textContent = visible;
+        empty.style.display = visible ? 'none' : 'block';
+    }
+
+    function clearFilters() {
+        filterForm.reset();
+        document.querySelector('#fresh').checked = true;
+        filterListings();
+    }
+
+    filterForm.addEventListener('submit', event => { event.preventDefault(); filterListings(); });
+    filterForm.querySelectorAll('select, input').forEach(control => control.addEventListener('change', filterListings));
+    document.querySelector('#clear-filters').addEventListener('click', clearFilters);
+    document.querySelector('#reset-empty').addEventListener('click', clearFilters);
+
+    const contactDialog = document.querySelector('#contact-dialog');
+    document.querySelectorAll('.contact').forEach(button => button.addEventListener('click', () => {
+        document.querySelector('#recipient').textContent = button.dataset.person;
+        document.querySelector('#listing-name').textContent = button.dataset.listing;
+        contactDialog.showModal();
+    }));
+</script>
+</body>
+</html>
