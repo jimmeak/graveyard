@@ -31,6 +31,4 @@ class SkinRedirectTestCase(TestCase):
         self.client.force_login(create_profiled_user("test-user", "password"))
         res = self.client.get(reverse("ddcz:news"), {"z_s": 3, "order": "author"})
 
-        self.assertContains(
-            res, "redirect=/aktuality/%3Fz_s%3D3%26order%3Dauthor"
-        )
+        self.assertContains(res, "redirect=/aktuality/%3Fz_s%3D3%26order%3Dauthor")
