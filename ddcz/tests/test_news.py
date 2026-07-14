@@ -13,7 +13,7 @@ class TestNewsfeed(TestCase):
         self.client = Client()
         cache.clear()
         self.creative_page = CreativePage.objects.create(
-            name="Test Page", slug="testpage", model_class="ddcz.CommonArticle"
+            name="Test Page", slug="testpage", model_class="ddcz.commonarticle"
         )
 
     def test_newsfeed_empty_response(self):
